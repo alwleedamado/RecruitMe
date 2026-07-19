@@ -1,22 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using RecruitMe.Application.Authentication.Interfaces;
 using RecruitMe.Application.Authentication.Models;
-using RecruitMe.Persistence.Identity;
+using RecruitMe.Infrastructure.Identity;
 
 namespace RecruitMe.Infrastructure.Authentication;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationService(
+    UserManager<ApplicationUser> userManager,
+    IJwtService jwtService) : IAuthenticationService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IJwtService _jwtService;
-
-    public AuthenticationService(
-        UserManager<ApplicationUser> userManager,
-        IJwtService jwtService)
-    {
-        _userManager = userManager;
-        _jwtService = jwtService;
-    }
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly IJwtService _jwtService = jwtService;
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {

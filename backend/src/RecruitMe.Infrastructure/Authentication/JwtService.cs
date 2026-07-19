@@ -9,18 +9,12 @@ using System.Text;
 
 namespace RecruitMe.Infrastructure.Authentication;
 
-public class JwtService : IJwtService
+public class JwtService(
+    IOptions<JwtOptions> options,
+    UserManager<ApplicationUser> userManager) : IJwtService
 {
-    private readonly JwtOptions _options;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public JwtService(
-        IOptions<JwtOptions> options,
-        UserManager<ApplicationUser> userManager)
-    {
-        _options = options.Value;
-        _userManager = userManager;
-    }
+    private readonly JwtOptions _options = options.Value;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
 
     public async Task<JwtToken> GenerateTokenAsync(ApplicationUser user)
     {

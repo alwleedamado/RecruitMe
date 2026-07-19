@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace RecruitMe.Persistence.Identity;
+namespace RecruitMe.Infrastructure.Identity;
 
 public class ApplicationUser : IdentityUser
 {

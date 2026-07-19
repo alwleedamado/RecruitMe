@@ -1,16 +1,11 @@
 using RecruitMe.Application.Interfaces;
-using RecruitMe.Persistence.Context;
+using RecruitMe.Infrastructure.Presistence;
 
 namespace RecruitMe.Persistence.UnitOfWork;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {
-    private readonly ApplicationDbContext _context;
-
-    public UnitOfWork(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)

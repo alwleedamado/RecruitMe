@@ -1,6 +1,6 @@
 using RecruitMe.Api.ExceptionHandlers;
 using RecruitMe.Infrastructure;
-using RecruitMe.Persistence;
+using RecruitMe.Application;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,10 +27,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-
-builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Angular", policy =>

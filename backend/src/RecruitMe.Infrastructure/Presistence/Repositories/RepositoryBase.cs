@@ -1,21 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using RecruitMe.Application.Interfaces.Repositories;
-using RecruitMe.Persistence.Context;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using RecruitMe.Application.Interfaces;
+using RecruitMe.Infrastructure.Presistence;
 
-namespace RecruitMe.Persistence.Repositories;
-
-public class GenericRepository<TEntity> : IGenericRepository<TEntity>
+namespace RecruitMe.Infrastructure.Persistence.Repositories;
+public class RepositoryBase<TEntity>(ApplicationDbContext context) : IRepository<TEntity>
     where TEntity : class
 {
-    protected readonly ApplicationDbContext Context;
-    protected readonly DbSet<TEntity> DbSet;
-
-    public GenericRepository(ApplicationDbContext context)
-    {
-        Context = context;
-        DbSet = context.Set<TEntity>();
-    }
+    protected readonly ApplicationDbContext Context = context;
+    protected readonly DbSet<TEntity> DbSet = context.Set<TEntity>();
 
     public async Task<TEntity?> GetByIdAsync(object id)
     {

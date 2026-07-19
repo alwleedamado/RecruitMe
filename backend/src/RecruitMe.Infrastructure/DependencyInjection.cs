@@ -1,14 +1,16 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using RecruitMe.Application.Authentication.Interfaces;
 using RecruitMe.Infrastructure.Authentication;
 using RecruitMe.Infrastructure.Email;
 using RecruitMe.Infrastructure.Identity;
 using RecruitMe.Infrastructure.Options;
-using RecruitMe.Persistence.Context;
+using RecruitMe.Infrastructure.Presistence;
 using System.Text;
 
 namespace RecruitMe.Infrastructure;
@@ -19,9 +21,19 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
+        // Database
+        // ------------------------------------------------------------
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection"));
+        });
+
+        // ------------------------------------------------------------
         // Options
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
 
         services.Configure<JwtOptions>(
             configuration.GetSection(JwtOptions.SectionName));
@@ -29,16 +41,16 @@ public static class DependencyInjection
         services.Configure<EmailOptions>(
             configuration.GetSection(EmailOptions.SectionName));
 
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
         // Identity
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
 
         services
             .AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                options.Password.RequireDigit = true;
+                options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 8;
 
@@ -50,9 +62,9 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
         // JWT Authentication
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
 
         var jwtOptions = configuration
             .GetSection(JwtOptions.SectionName)
@@ -89,26 +101,32 @@ public static class DependencyInjection
                 };
             });
 
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
+        // Authorization
+        // ------------------------------------------------------------
+
+        services.AddAuthorization();
+
+        // ------------------------------------------------------------
         // AutoMapper
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
         // FluentValidation
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
 
         services.AddValidatorsFromAssemblies(
             AppDomain.CurrentDomain.GetAssemblies());
 
-        // ------------------------------------------------------------------
-        // Dependency Injection
-        // ------------------------------------------------------------------
+        // ------------------------------------------------------------
+        // Application Services
+        // ------------------------------------------------------------
 
         services.AddScoped<IJwtService, JwtService>();
-
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;
     }

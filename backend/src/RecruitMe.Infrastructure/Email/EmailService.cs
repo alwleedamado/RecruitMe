@@ -6,14 +6,9 @@ using RecruitMe.Infrastructure.Options;
 
 namespace RecruitMe.Infrastructure.Email;
 
-public class EmailService : IEmailService
+public class EmailService(IOptions<EmailOptions> options) : IEmailService
 {
-    private readonly EmailOptions _options;
-
-    public EmailService(IOptions<EmailOptions> options)
-    {
-        _options = options.Value;
-    }
+    private readonly EmailOptions _options = options.Value;
 
     public async Task SendAsync(
         string to,

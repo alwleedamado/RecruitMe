@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\RecruitMe.Domain\RecruitMe.Domain.csproj" />
     <ProjectReference Include="..\..\src\RecruitMe.Application\RecruitMe.Application.csproj" />
   </ItemGroup>
 

@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 
-namespace RecruitMe.Application.Interfaces.Repositories;
+namespace RecruitMe.Application.Interfaces;
 
-public interface IGenericRepository<TEntity>
+public interface IRepository<TEntity>
     where TEntity : class
 {
     Task<TEntity?> GetByIdAsync(object id);
