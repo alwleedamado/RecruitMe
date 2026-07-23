@@ -1,4 +1,4 @@
-using RecruitMe.Application.Authentication.Models;
+using RecruitMe.Application.Authentication.DTOs;
 
 namespace RecruitMe.Application.Authentication.Interfaces;
 

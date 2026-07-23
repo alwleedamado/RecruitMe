@@ -1,4 +1,4 @@
-using FluentValidation;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,11 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RecruitMe.Application.Authentication.Interfaces;
 using RecruitMe.Infrastructure.Authentication;
-using RecruitMe.Infrastructure.Email;
 using RecruitMe.Infrastructure.Identity;
-using RecruitMe.Infrastructure.Options;
-using RecruitMe.Infrastructure.Presistence;
-using System.Text;
+using RecruitMe.Infrastructure.Persistence;
 
 namespace RecruitMe.Infrastructure;
 
@@ -21,112 +18,74 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // ------------------------------------------------------------
-        // Database
-        // ------------------------------------------------------------
-
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"));
+                configuration.GetConnectionString(
+                    "DefaultConnection"));
         });
 
-        // ------------------------------------------------------------
-        // Options
-        // ------------------------------------------------------------
-
-        services.Configure<JwtOptions>(
-            configuration.GetSection(JwtOptions.SectionName));
-
-        services.Configure<EmailOptions>(
-            configuration.GetSection(EmailOptions.SectionName));
-
-        // ------------------------------------------------------------
-        // Identity
-        // ------------------------------------------------------------
-
-        services
-            .AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 8;
-
-                options.User.RequireUniqueEmail = true;
-
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-            })
+        services.AddIdentity<ApplicationUser, IdentityRole>(
+                options =>
+                {
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        // ------------------------------------------------------------
-        // JWT Authentication
-        // ------------------------------------------------------------
+        services.Configure<JwtSettings>(
+            configuration.GetSection(
+                JwtSettings.SectionName));
 
-        var jwtOptions = configuration
-            .GetSection(JwtOptions.SectionName)
-            .Get<JwtOptions>()
-            ?? throw new InvalidOperationException("JWT configuration is missing.");
+        var jwtSettings = configuration
+            .GetSection(JwtSettings.SectionName)
+            .Get<JwtSettings>()
+            ?? throw new InvalidOperationException(
+                "JWT configuration is missing.");
 
-        var key = Encoding.UTF8.GetBytes(jwtOptions.SecretKey);
-
-        services
-            .AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-
-                options.TokenValidationParameters = new TokenValidationParameters
+        services.AddAuthentication(
+                options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
+                    options.DefaultAuthenticateScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
 
-                    ValidIssuer = jwtOptions.Issuer,
-                    ValidAudience = jwtOptions.Audience,
+                    options.DefaultChallengeScheme =
+                        JwtBearerDefaults.AuthenticationScheme;
+                })
+            .AddJwtBearer(
+                options =>
+                {
+                    options.TokenValidationParameters =
+                        new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
 
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                            ValidIssuer =
+                                jwtSettings.Issuer,
 
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+                            ValidAudience =
+                                jwtSettings.Audience,
 
-        // ------------------------------------------------------------
-        // Authorization
-        // ------------------------------------------------------------
+                            IssuerSigningKey =
+                                new SymmetricSecurityKey(
+                                    Encoding.UTF8.GetBytes(
+                                        jwtSettings.SecretKey))
+                        };
+                });
 
         services.AddAuthorization();
 
-        // ------------------------------------------------------------
-        // AutoMapper
-        // ------------------------------------------------------------
+        services.AddScoped<JwtService>();
 
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-        // ------------------------------------------------------------
-        // FluentValidation
-        // ------------------------------------------------------------
-
-        services.AddValidatorsFromAssemblies(
-            AppDomain.CurrentDomain.GetAssemblies());
-
-        // ------------------------------------------------------------
-        // Application Services
-        // ------------------------------------------------------------
-
-        services.AddScoped<IJwtService, JwtService>();
-        services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IIdentityService,
+            IdentityService>();
 
         return services;
     }

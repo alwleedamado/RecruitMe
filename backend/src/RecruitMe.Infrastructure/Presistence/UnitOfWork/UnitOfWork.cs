@@ -1,5 +1,5 @@
 using RecruitMe.Application.Interfaces;
-using RecruitMe.Infrastructure.Presistence;
+using RecruitMe.Infrastructure.Persistence;
 
 namespace RecruitMe.Persistence.UnitOfWork;
 

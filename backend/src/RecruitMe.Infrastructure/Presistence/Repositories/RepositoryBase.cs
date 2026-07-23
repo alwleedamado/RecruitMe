@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using RecruitMe.Application.Interfaces;
-using RecruitMe.Infrastructure.Presistence;
+using RecruitMe.Infrastructure.Persistence;
 
 namespace RecruitMe.Infrastructure.Persistence.Repositories;
 public class RepositoryBase<TEntity>(ApplicationDbContext context) : IRepository<TEntity>

@@ -1,3 +1,4 @@
+using RecruitMe.Infrastructure.Authentication;
 using RecruitMe.Infrastructure.Identity;
 
 namespace RecruitMe.Infrastructure.Authentication;

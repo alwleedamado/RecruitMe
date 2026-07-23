@@ -1,38 +1,63 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RecruitMe.Application.Authentication.DTOs;
 using RecruitMe.Application.Authentication.Interfaces;
-using RecruitMe.Application.Authentication.Models;
 
 namespace RecruitMe.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class AuthenticationController : ControllerBase
+[Route("api/auth")]
+public class AuthenticationController(
+    IIdentityService identityService)
+    : ControllerBase
 {
-    private readonly IAuthenticationService _authenticationService;
-
-    public AuthenticationController(
-        IAuthenticationService authenticationService)
-    {
-        _authenticationService = authenticationService;
-    }
-
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequest request)
+    [AllowAnonymous]
+    public async Task<IActionResult> Register(
+        RegisterRequest request)
     {
-        await _authenticationService.RegisterAsync(request);
+        await identityService.RegisterApplicantAsync(request);
 
         return Ok(new
         {
-            Message = "Registration completed successfully."
+            Message = "Applicant registered successfully."
         });
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult<LoginResponse>> Login(
         LoginRequest request)
     {
-        var response = await _authenticationService.LoginAsync(request);
+        var response = await identityService.LoginAsync(request);
 
         return Ok(response);
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public IActionResult Me()
+    {
+        return Ok(new
+        {
+            UserId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier)
+                ?.Value,
+
+            Email = User.FindFirst(
+                System.Security.Claims.ClaimTypes.Email)
+                ?.Value,
+
+            Name = User.FindFirst(
+                System.Security.Claims.ClaimTypes.Name)
+                ?.Value,
+
+            Roles = User.Claims
+                .Where(x =>
+                    x.Type ==
+                    System.Security.Claims.ClaimTypes.Role)
+                .Select(x => x.Value)
+                .ToList()
+        });
     }
 }

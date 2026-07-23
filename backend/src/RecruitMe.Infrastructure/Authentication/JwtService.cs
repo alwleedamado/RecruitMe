@@ -1,63 +1,53 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using RecruitMe.Infrastructure.Identity;
-using RecruitMe.Infrastructure.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using RecruitMe.Infrastructure.Identity;
 
 namespace RecruitMe.Infrastructure.Authentication;
 
 public class JwtService(
-    IOptions<JwtOptions> options,
-    UserManager<ApplicationUser> userManager) : IJwtService
+    IOptions<JwtSettings> options)
 {
-    private readonly JwtOptions _options = options.Value;
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly JwtSettings _settings = options.Value;
 
-    public async Task<JwtToken> GenerateTokenAsync(ApplicationUser user)
+    public (string Token, DateTime ExpiresAt) GenerateToken(
+        ApplicationUser user,
+        IList<string> roles)
     {
-        var userClaims = await _userManager.GetClaimsAsync(user);
-        var userRoles = await _userManager.GetRolesAsync(user);
+        var expiresAt = DateTime.UtcNow.AddMinutes(
+            _settings.ExpirationMinutes);
 
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id),
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Name, user.UserName ?? string.Empty),
-            new("FullName", user.FullName)
+            new("fullName", user.FullName)
         };
 
-        claims.AddRange(userClaims);
-
-        foreach (var role in userRoles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+        claims.AddRange(
+            roles.Select(role =>
+                new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_options.SecretKey));
+            Encoding.UTF8.GetBytes(_settings.SecretKey));
 
         var credentials = new SigningCredentials(
             key,
             SecurityAlgorithms.HmacSha256);
 
-        var expires = DateTime.UtcNow.AddMinutes(_options.ExpiryMinutes);
-
         var token = new JwtSecurityToken(
-            issuer: _options.Issuer,
-            audience: _options.Audience,
+            issuer: _settings.Issuer,
+            audience: _settings.Audience,
             claims: claims,
-            expires: expires,
+            expires: expiresAt,
             signingCredentials: credentials);
 
-        return new JwtToken
-        {
-            AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
-            ExpiresAt = expires
-        };
+        return (
+            new JwtSecurityTokenHandler().WriteToken(token),
+            expiresAt);
     }
 }

@@ -2,6 +2,7 @@ using RecruitMe.Api.ExceptionHandlers;
 using RecruitMe.Infrastructure;
 using RecruitMe.Application;
 using Serilog;
+using RecruitMe.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,10 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Angular", policy =>
@@ -59,12 +63,19 @@ app.UseHttpsRedirection();
 app.UseCors("Angular");
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
 
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        await AdminSeeder.SeedAsync(scope.ServiceProvider);
+    }
+}
+
 #endregion
 
 app.Run();
-
-public partial class Program;

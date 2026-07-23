@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RecruitMe.Application.Authentication.Models;
+namespace RecruitMe.Application.Authentication.DTOs;
 
 public class LoginRequest
 {

@@ -6,7 +6,7 @@ RecruitMe is a professional Online Recruitment Management System.
 
 ### Backend
 
-- ASP.NET Core 9 Web API
+- ASP.NET Core 10 Web API
 - Entity Framework Core
 - SQL Server
 - ASP.NET Core Identity
