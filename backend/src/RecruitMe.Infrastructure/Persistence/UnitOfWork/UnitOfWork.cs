@@ -1,7 +1,7 @@
 using RecruitMe.Application.Interfaces;
 using RecruitMe.Infrastructure.Persistence;
 
-namespace RecruitMe.Persistence.UnitOfWork;
+namespace RecruitMe.Infrastructure.Persistence.UnitOfWork;
 
 public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {

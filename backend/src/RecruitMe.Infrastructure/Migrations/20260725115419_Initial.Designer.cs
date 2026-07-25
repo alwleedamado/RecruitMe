@@ -12,7 +12,7 @@ using RecruitMe.Infrastructure.Persistence;
 namespace RecruitMe.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260720072504_Initial")]
+    [Migration("20260725115419_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
