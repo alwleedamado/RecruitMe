@@ -1,17 +1,15 @@
 using RecruitMe.Application.Interfaces.Repositories;
 using RecruitMe.Domain.Entities;
-using RecruitMe.Infrastructure.Persistence;
-using RecruitMe.Infrastructure.Persistence.Repositories;
-
+using Microsoft.EntityFrameworkCore;
 namespace RecruitMe.Infrastructure.Persistence.Repositories;
 
 public class HrRepository(
     ApplicationDbContext context)
-    : RepositoryBase<Hr>(context),
+        : RepositoryBase<Hr>(context),
       IHrRepository
 {
-    public Task<Hr> GetByIdentityIdAsync(string identityId)
+    public async Task<Hr?> GetByIdentityIdAsync(string identityId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await Context.Hrs.FirstOrDefaultAsync(x => x.IdentityId == identityId);
     }
 }

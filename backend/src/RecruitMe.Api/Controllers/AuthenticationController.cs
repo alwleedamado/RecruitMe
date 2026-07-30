@@ -2,12 +2,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecruitMe.Application.Authentication.DTOs;
 using RecruitMe.Application.Authentication.Interfaces;
+using RecruitMe.Application.DTOs;
+using RecruitMe.Application.Interfaces;
+using RecruitMe.Domain.Entities;
 
 namespace RecruitMe.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthenticationController(
+    IHrService hrService,
     IIdentityService identityService)
     : ControllerBase
 {
@@ -59,5 +63,15 @@ public class AuthenticationController(
                 .Select(x => x.Value)
                 .ToList()
         });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("register-hr")]
+    public async Task<ActionResult> RegisterHr(
+        RegisterHrRequest request,
+        CancellationToken cancellationToken)
+    {
+       var dto = await hrService.CreateHrAsync(request, cancellationToken);
+       return Ok(dto);
     }
 }

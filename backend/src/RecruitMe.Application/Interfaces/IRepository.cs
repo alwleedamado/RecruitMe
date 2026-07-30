@@ -10,7 +10,7 @@ public interface IRepository<TEntity>
     Task<TEntity?> FirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate);
 
-    Task<IEnumerable<TEntity>> GetAllAsync();
+    Task<List<TEntity>> GetAllAsync();
 
     Task<IEnumerable<TEntity>> FindAsync(
         Expression<Func<TEntity, bool>> predicate);

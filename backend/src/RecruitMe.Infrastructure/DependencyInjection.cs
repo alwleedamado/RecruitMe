@@ -6,9 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RecruitMe.Application.Authentication.Interfaces;
+using RecruitMe.Application.Interfaces;
 using RecruitMe.Infrastructure.Authentication;
 using RecruitMe.Infrastructure.Identity;
 using RecruitMe.Infrastructure.Persistence;
+using RecruitMe.Infrastructure.Persistence.UnitOfWork;
+using RecruitMe.Infrastructure.Service;
 
 namespace RecruitMe.Infrastructure;
 
@@ -87,6 +90,10 @@ public static class DependencyInjection
         services.AddScoped<IIdentityService,
             IdentityService>();
 
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
         return services;
     }
 }

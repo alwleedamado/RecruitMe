@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using RecruitMe.Application.Authentication.DTOs;
 using RecruitMe.Application.Authentication.Interfaces;
+using RecruitMe.Application.DTOs;
 using RecruitMe.Infrastructure.Authentication;
-using RecruitMe.Infrastructure.Persistence;
 
 namespace RecruitMe.Infrastructure.Identity;
 
 public class IdentityService(
     UserManager<ApplicationUser> userManager,
     RoleManager<IdentityRole> roleManager,
-    ApplicationDbContext context,
     JwtService jwtService)
     : IIdentityService
 {
@@ -75,6 +74,67 @@ public class IdentityService(
         // await context.SaveChangesAsync();
     }
 
+    public async Task<User> GetUserByIdAsync(string id)
+    {
+        var user =  await userManager.FindByIdAsync(id)
+                    ?? throw new InvalidOperationException();
+        return new User(user.FullName, user.Email!);
+    }
+
+    public async Task<string> RegisterHr(RegisterHrRequest request, CancellationToken cancellationToken)
+    {
+        var existingUser = await userManager.FindByEmailAsync(
+            request.Email);
+
+        if (existingUser is not null)
+        {
+            throw new InvalidOperationException(
+                "A user with this email already exists.");
+        }
+
+        var user = new ApplicationUser
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FullName = request.FullName,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(
+            user,
+            request.Password);
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(
+                ", ",
+                result.Errors.Select(x => x.Description));
+
+            throw new InvalidOperationException(errors);
+        }
+
+        if (!await roleManager.RoleExistsAsync(Roles.HR))
+        {
+            await roleManager.CreateAsync(
+                new IdentityRole(Roles.HR));
+        }
+
+        var roleResult = await userManager.AddToRoleAsync(
+            user,
+            Roles.HR);
+
+        if (!roleResult.Succeeded)
+        {
+            var errors = string.Join(
+                ", ",
+                roleResult.Errors.Select(x => x.Description));
+
+            throw new InvalidOperationException(errors);
+        }
+
+        return user.Id;
+    }
+
     public async Task<LoginResponse> LoginAsync(
         LoginRequest request)
     {
@@ -105,12 +165,13 @@ public class IdentityService(
         return new LoginResponse
         {
             AccessToken = token,
-          
-                Id = user.Id,
-                Email = user.Email ?? string.Empty,
-                FullName = user.FullName,
-                Roles = roles
-            
+
+            Id = user.Id,
+            Email = user.Email ?? string.Empty,
+            FullName = user.FullName,
+            Roles = roles
+
         };
     }
+
 }

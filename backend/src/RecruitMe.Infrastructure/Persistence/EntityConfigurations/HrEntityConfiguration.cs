@@ -11,7 +11,7 @@ public class HrEntityConfiguration : IEntityTypeConfiguration<Hr>
         builder.ToTable("Hrs");
 
         builder.HasKey(x => x.Id);
-        
+
         builder.HasIndex("IdentityId")
             .IsUnique();
 
@@ -22,6 +22,7 @@ public class HrEntityConfiguration : IEntityTypeConfiguration<Hr>
             .IsRequired();
 
         builder.Property(x => x.Salary)
-            .IsRequired();
+            .IsRequired()
+            .HasConversion<decimal>();
     }
 }
