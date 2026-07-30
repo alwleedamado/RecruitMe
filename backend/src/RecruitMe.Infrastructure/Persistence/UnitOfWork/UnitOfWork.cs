@@ -8,14 +8,29 @@ public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {
     private readonly ApplicationDbContext _context = context;
 
-    public IHrRepository HrRepository  {
+    public IHrRepository HrRepository
+    {
         get => field ?? new HrRepository(_context);
+        set;
+    }
+
+    public IJobPostingRepository JobPostingRepository
+    {
+        get => field ?? new JobPostingRepository(_context);
         set;
     }
 
     public async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            return await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+
+            throw;
+        }
     }
 }
