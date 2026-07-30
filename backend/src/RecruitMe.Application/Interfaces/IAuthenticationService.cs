@@ -1,6 +1,6 @@
-using RecruitMe.Application.Authentication.DTOs;
+using RecruitMe.Application.DTOs;
 
-namespace RecruitMe.Application.Authentication.Interfaces;
+namespace RecruitMe.Application.Interfaces;
 
 public interface IAuthenticationService
 {

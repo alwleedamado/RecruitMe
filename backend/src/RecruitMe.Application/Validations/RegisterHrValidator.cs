@@ -1,5 +1,4 @@
 using FluentValidation;
-using RecruitMe.Application.Authentication.DTOs;
 using RecruitMe.Application.DTOs;
 
 namespace RecruitMe.Application.Validations;

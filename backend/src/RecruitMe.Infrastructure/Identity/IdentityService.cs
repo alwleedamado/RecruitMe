@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
-using RecruitMe.Application.Authentication.DTOs;
-using RecruitMe.Application.Authentication.Interfaces;
 using RecruitMe.Application.DTOs;
+using RecruitMe.Application.Interfaces;
 using RecruitMe.Infrastructure.Authentication;
 
 namespace RecruitMe.Infrastructure.Identity;

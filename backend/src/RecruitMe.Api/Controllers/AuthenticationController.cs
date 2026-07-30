@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RecruitMe.Application.Authentication.DTOs;
-using RecruitMe.Application.Authentication.Interfaces;
 using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
 using RecruitMe.Domain.Entities;

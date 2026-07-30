@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using RecruitMe.Application.Interfaces;
 
-namespace RecruitMe.Infrastructure.Service;
+namespace RecruitMe.Infrastructure.Services;
 
 public class CurrentUserService(
     IHttpContextAccessor httpContextAccessor)

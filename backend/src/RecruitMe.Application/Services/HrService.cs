@@ -1,5 +1,4 @@
 using AutoMapper;
-using RecruitMe.Application.Authentication.Interfaces;
 using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
 using RecruitMe.Domain.Entities;

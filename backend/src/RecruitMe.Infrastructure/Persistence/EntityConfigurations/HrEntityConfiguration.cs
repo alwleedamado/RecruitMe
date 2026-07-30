@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RecruitMe.Domain.Entities;
 
-namespace RecruitMe.Infrastructure.Presistence.Repositories;
+namespace RecruitMe.Infrastructure.Persistence.EntityConfigurations;
 
 public class HrEntityConfiguration : IEntityTypeConfiguration<Hr>
 {
