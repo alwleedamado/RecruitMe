@@ -24,4 +24,10 @@ public class JobPostingService(IUnitOfWork unitOfWork,IMapper mapper, ICurrentUs
         await unitOfWork.SaveChangesAsync(cancellationToken);
         return mapper.Map<JobPostingDto>(entity);
     }
+
+    public async Task DeleteJobAsync(int id)
+    {
+        var job = await GetJobPostingAsync(id) ?? throw new InvalidOperationException();
+        unitOfWork.JobPostingRepository.Delete(job);
+    }
 }

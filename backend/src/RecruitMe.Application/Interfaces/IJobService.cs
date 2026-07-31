@@ -7,4 +7,5 @@ public interface IJobService
 {
     Task<JobPostingDto?> GetJobPostingAsync(int jobPostingId);
     Task<JobPostingDto> CreateJobPostingAsync(CreateJobPosting request, CancellationToken cancellationToken);
+    Task DeleteJobAsync(int id);
 }

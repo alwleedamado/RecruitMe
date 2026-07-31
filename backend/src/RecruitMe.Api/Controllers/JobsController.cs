@@ -25,4 +25,17 @@ public class JobsController(IJobService jobService) : ControllerBase
         var ret = await jobService.CreateJobPostingAsync(request, cancellationToken);
         return Ok(ret);
     }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            await jobService.DeleteJobAsync(id);
+        } catch(InvalidOperationException ex)
+        {
+            return NotFound("Job posting not found");
+        }
+        return NoContent();
+    }
 }
