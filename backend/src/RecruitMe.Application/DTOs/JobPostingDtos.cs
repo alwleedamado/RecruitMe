@@ -21,3 +21,8 @@ public class CreateJobPosting
     public string? Location { get; set; }
     public DateTime EndsOn { get; set; }
 }
+
+public class UpdateJobPosting : CreateJobPosting
+{
+    public required  int Id { get; set; }
+}

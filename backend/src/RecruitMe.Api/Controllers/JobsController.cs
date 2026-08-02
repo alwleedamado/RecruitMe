@@ -6,15 +6,19 @@ namespace RecruitMe.Api.Controllers;
 
 [ApiController]
 [Route("api/jobs")]
-public class JobsController(IJobService jobService) : ControllerBase
+public class JobsController(IJobPostingService jobPostingService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GEtAll() {}
+    public async Task<IActionResult> GEtAll()
+    {
+        var ret = await jobPostingService.GetAll();
+        return Ok(ret);
+    }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetByIdAsync(int id)
     {
-        var ret = await jobService.GetJobPostingAsync(id);
+        var ret = await jobPostingService.GetJobPostingAsync(id);
         if (ret == null) return NotFound("Job posting not found");
         return Ok(ret);
     }
@@ -22,8 +26,16 @@ public class JobsController(IJobService jobService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateJobPosting request,  CancellationToken cancellationToken)
     {
-        var ret = await jobService.CreateJobPostingAsync(request, cancellationToken);
+        var ret = await jobPostingService.CreateJobPostingAsync(request, cancellationToken);
         return Ok(ret);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateJobPosting request)
+    {
+        if (id != request.Id) return BadRequest();
+        await jobPostingService.UpdateJobPosting(request);
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
@@ -31,7 +43,7 @@ public class JobsController(IJobService jobService) : ControllerBase
     {
         try
         {
-            await jobService.DeleteJobAsync(id);
+            await jobPostingService.DeleteJobAsync(id);
         } catch(InvalidOperationException ex)
         {
             return NotFound("Job posting not found");
