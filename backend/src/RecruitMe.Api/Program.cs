@@ -1,8 +1,8 @@
 using RecruitMe.Api.ExceptionHandlers;
-using RecruitMe.Infrastructure;
 using RecruitMe.Application;
-using Serilog;
+using RecruitMe.Infrastructure;
 using RecruitMe.Infrastructure.Identity;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 

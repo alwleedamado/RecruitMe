@@ -20,6 +20,11 @@ public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
         set;
     }
 
+    public IApplicantRepository ApplicantRepository
+    {
+        get => field ?? new ApplicantRepository(_context);
+        set;
+    }
     public async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {

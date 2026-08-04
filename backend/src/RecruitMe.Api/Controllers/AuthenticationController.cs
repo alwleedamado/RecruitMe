@@ -2,23 +2,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
-using RecruitMe.Domain.Entities;
 
 namespace RecruitMe.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthenticationController(
-    IHrService hrService,
+    IHrService hrService, IApplicantService applicantService,
     IIdentityService identityService)
     : ControllerBase
 {
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<IActionResult> Register(
-        RegisterRequest request)
+    public async Task<IActionResult> Register(CreateApplicant request, CancellationToken cancellationToken)
     {
-        await identityService.RegisterApplicantAsync(request);
+        await applicantService.CreateApplicantAsync(request, cancellationToken);
 
         return Ok(new
         {
@@ -69,7 +67,7 @@ public class AuthenticationController(
         RegisterHrRequest request,
         CancellationToken cancellationToken)
     {
-       var dto = await hrService.CreateHrAsync(request, cancellationToken);
-       return Ok(dto);
+        var dto = await hrService.CreateHrAsync(request, cancellationToken);
+        return Ok(dto);
     }
 }

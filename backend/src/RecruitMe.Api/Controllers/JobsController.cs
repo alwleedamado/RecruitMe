@@ -24,7 +24,7 @@ public class JobsController(IJobPostingService jobPostingService) : ControllerBa
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateJobPosting request,  CancellationToken cancellationToken)
+    public async Task<IActionResult> Create(CreateJobPosting request, CancellationToken cancellationToken)
     {
         var ret = await jobPostingService.CreateJobPostingAsync(request, cancellationToken);
         return Ok(ret);
@@ -44,7 +44,8 @@ public class JobsController(IJobPostingService jobPostingService) : ControllerBa
         try
         {
             await jobPostingService.DeleteJobAsync(id);
-        } catch(InvalidOperationException ex)
+        }
+        catch (InvalidOperationException ex)
         {
             return NotFound("Job posting not found");
         }

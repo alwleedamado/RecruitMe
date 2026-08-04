@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
+using RecruitMe.Domain.Entities;
 using RecruitMe.Infrastructure.Authentication;
 
 namespace RecruitMe.Infrastructure.Identity;
@@ -11,71 +12,61 @@ public class IdentityService(
     JwtService jwtService)
     : IIdentityService
 {
-    public async Task RegisterApplicantAsync(
-        RegisterRequest request)
+    public async Task<string> RegisterApplicantAsync(CreateApplicant request, CancellationToken cancellationToken)
     {
-        // var existingUser = await userManager.FindByEmailAsync(
-        //     request.Email);
+        var existingUser = await userManager.FindByEmailAsync(
+            request.Email);
 
-        // if (existingUser is not null)
-        // {
-        //     throw new InvalidOperationException(
-        //         "A user with this email already exists.");
-        // }
+        if (existingUser is not null)
+        {
+            throw new InvalidOperationException(
+                "A user with this email already exists.");
+        }
 
-        // var user = new ApplicationUser
-        // {
-        //     UserName = request.Email,
-        //     Email = request.Email,
-        //     FullName = request.FullName
-        // };
+        var user = new ApplicationUser
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FullName = request.FullName,
+        };
 
-        // var result = await userManager.CreateAsync(
-        //     user,
-        //     request.Password);
+        var result = await userManager.CreateAsync(
+            user,
+            request.Password);
 
-        // if (!result.Succeeded)
-        // {
-        //     var errors = string.Join(
-        //         ", ",
-        //         result.Errors.Select(x => x.Description));
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(
+                ", ",
+                result.Errors.Select(x => x.Description));
 
-        //     throw new InvalidOperationException(errors);
-        // }
+            throw new InvalidOperationException(errors);
+        }
 
-        // if (!await roleManager.RoleExistsAsync(Roles.Applicant))
-        // {
-        //     await roleManager.CreateAsync(
-        //         new IdentityRole(Roles.Applicant));
-        // }
+        if (!await roleManager.RoleExistsAsync(Roles.Applicant))
+        {
+            await roleManager.CreateAsync(
+                new IdentityRole(Roles.Applicant));
+        }
 
-        // var roleResult = await userManager.AddToRoleAsync(
-        //     user,
-        //     Roles.Applicant);
+        var roleResult = await userManager.AddToRoleAsync(
+            user,
+            Roles.Applicant);
 
-        // if (!roleResult.Succeeded)
-        // {
-        //     var errors = string.Join(
-        //         ", ",
-        //         roleResult.Errors.Select(x => x.Description));
+        if (!roleResult.Succeeded)
+        {
+            var errors = string.Join(
+                ", ",
+                roleResult.Errors.Select(x => x.Description));
 
-        //     throw new InvalidOperationException(errors);
-        // }
-
-        // var applicant = new Applicant
-        // {
-        //     IdentityUserId = user.Id,
-        //     FullName = request.FullName
-        // };
-
-        // context.Applicants.Add(applicant);
-
-        // await context.SaveChangesAsync();
+            throw new InvalidOperationException(errors);
+        }
+        return user.Id;
     }
 
     public async Task<User> GetUserByIdAsync(string id)
     {
-        var user =  await userManager.FindByIdAsync(id)
+        var user = await userManager.FindByIdAsync(id)
                     ?? throw new InvalidOperationException();
         return new User(user.FullName, user.Email!);
     }
