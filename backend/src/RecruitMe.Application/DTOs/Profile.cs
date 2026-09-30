@@ -11,8 +11,7 @@ public class MappingProfile : Profile
         CreateMap<UpdateHr, Hr>();
         CreateMap<JobPosting, JobPostingDto>();
         CreateMap<Applicant, ApplicantDto>()
-            .ForMember(dest => dest.Skills, opt => opt.MapFrom(src => src.Skills.Select(s => s.SkillName));
+            .ForMember(dest => dest.Skills, opt => opt.MapFrom(src => src.Skills.Select(s => s.SkillName)));
         CreateMap<WorkExperience, WorkExperienceDto>();
     }
 }
-+

@@ -20,23 +20,20 @@ public class RegisterHrRequest(string fullName, string email,decimal salary, Dat
 
 public class HrDto
 {
-    protected HrDto()
-    {
-    }
-
+    public HrDto() { }
     public HrDto(int id, string fullName, string email, DateTime hireDate, decimal salary)
     {
         Id = id;
         FullName = fullName;
         Email = email;
-        HireDate = hireDate;
+        HiredDate = hireDate;
         Salary = salary;
     }
 
     public int Id { get; init; }
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
-    public DateTime HireDate { get; init; }
+    public DateTime HiredDate { get; init; }
     public decimal Salary { get; init; }
 
     public void Deconstruct(out int id, out string fullName, out string email, out DateTime hireDate, out decimal salary)
@@ -44,7 +41,7 @@ public class HrDto
         id = this.Id;
         fullName = this.FullName;
         email = this.Email;
-        hireDate = this.HireDate;
+        hireDate = this.HiredDate;
         salary = this.Salary;
     }
 }

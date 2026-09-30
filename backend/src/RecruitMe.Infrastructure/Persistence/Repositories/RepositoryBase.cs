@@ -14,7 +14,7 @@ public class RepositoryBase<TEntity>(ApplicationDbContext context) : IRepository
         return await DbSet.FindAsync(id);
     }
 
-    public async Task<List<TEntity>> GetAllAsync()
+    public async virtual Task<List<TEntity>> GetAllAsync()
     {
         return await DbSet.ToListAsync();
     }

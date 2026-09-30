@@ -49,6 +49,7 @@ public class HrService(IUnitOfWork unitOfWork,
     public async Task<List<HrDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await unitOfWork.HrRepository.GetAllAsync();
+
         return mapper.Map<List<Hr>, List<HrDto>>(entities);
     }
 }

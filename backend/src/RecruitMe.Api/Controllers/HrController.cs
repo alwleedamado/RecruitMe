@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
@@ -13,6 +14,15 @@ public class HrController(IHrService hrService) : ControllerBase
     {
         var ret = await hrService.GetAllAsync(cancellationToken);
         return Ok(ret);
+    }
+    [Authorize(Roles = "Admin")]
+    [HttpPost()]
+    public async Task<ActionResult> Create(
+        RegisterHrRequest request,
+        CancellationToken cancellationToken)
+    {
+        var dto = await hrService.CreateHrAsync(request, cancellationToken);
+        return Ok(dto);
     }
 
     [HttpGet("{id:int}")]

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
@@ -24,6 +25,7 @@ public class JobsController(IJobPostingService jobPostingService) : ControllerBa
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Create(CreateJobPosting request, CancellationToken cancellationToken)
     {
         var ret = await jobPostingService.CreateJobPostingAsync(request, cancellationToken);
@@ -31,6 +33,7 @@ public class JobsController(IJobPostingService jobPostingService) : ControllerBa
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateJobPosting request)
     {
         if (id != request.Id) return BadRequest();
@@ -39,13 +42,14 @@ public class JobsController(IJobPostingService jobPostingService) : ControllerBa
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Delete(int id)
     {
         try
         {
             await jobPostingService.DeleteJobAsync(id);
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException)
         {
             return NotFound("Job posting not found");
         }

@@ -60,14 +60,4 @@ public class AuthenticationController(
                 .ToList()
         });
     }
-
-    [Authorize(Roles = "Admin")]
-    [HttpPost("register-hr")]
-    public async Task<ActionResult> RegisterHr(
-        RegisterHrRequest request,
-        CancellationToken cancellationToken)
-    {
-        var dto = await hrService.CreateHrAsync(request, cancellationToken);
-        return Ok(dto);
-    }
 }

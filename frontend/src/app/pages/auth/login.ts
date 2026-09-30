@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { AuthService } from '../service/auth.service';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,7 +12,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, ReactiveFormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
     template: `
         <app-floating-configurator />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden">
@@ -41,20 +42,22 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                         </div>
 
                         <div>
+                            <form [formGroup]="form">
                             <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-                            <input pInputText id="email1" type="text" placeholder="Email address" class="w-full md:w-120 mb-8" [(ngModel)]="email" />
+                            <input pInputText formControlName="email" id="email1" type="text" placeholder="Email address" class="w-full md:w-120 mb-8" />
 
                             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                            <p-password id="password1" [(ngModel)]="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+                            <p-password formControlName="password" id="password1" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
 
                             <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                                 <div class="flex items-center">
-                                    <p-checkbox [(ngModel)]="checked" id="rememberme1" binary class="mr-2"></p-checkbox>
+                                    <p-checkbox formControlName="rememberMe" id="rememberme1" binary class="mr-2"></p-checkbox>
                                     <label for="rememberme1">Remember me</label>
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                             </div>
-                            <p-button label="Sign In" styleClass="w-full" routerLink="/"></p-button>
+                            <p-button (click)="login()" label="Sign In" styleClass="w-full" type="submit"></p-button>
+</form>
                         </div>
                     </div>
                 </div>
@@ -68,4 +71,33 @@ export class Login {
     password: string = '';
 
     checked: boolean = false;
+
+    authService = inject(AuthService);
+
+    router = inject(Router);
+
+    fb = inject(FormBuilder);
+
+    form: FormGroup;
+    
+    constructor() {
+        this.form = this.fb.group({
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', [Validators.required]],
+            rememberMe: null
+        })
+    }
+    login(): void {
+        const {email, password, rememberMe} = this.form.value;
+        console.log(email, password, rememberMe);
+        this.authService.login(email, password, rememberMe)
+        .subscribe({
+            next: () => {
+                this.router.navigate(['/'])
+            },
+            error: (err) => {
+                console.error(err);
+            }
+        });
+    }
 }

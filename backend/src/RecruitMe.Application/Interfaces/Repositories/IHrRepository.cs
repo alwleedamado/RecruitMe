@@ -1,3 +1,4 @@
+using RecruitMe.Application.DTOs;
 using RecruitMe.Application.Interfaces;
 using RecruitMe.Domain.Entities;
 
@@ -5,4 +6,5 @@ namespace RecruitMe.Application.Interfaces.Repositories;
 public interface IHrRepository : IRepository<Hr>
 {
     Task<Hr?> GetByIdentityIdAsync(string identityId, CancellationToken cancellationToken);
+    Task<List<HrDto>> GetEmployees(CancellationToken cancellationToken);
 }

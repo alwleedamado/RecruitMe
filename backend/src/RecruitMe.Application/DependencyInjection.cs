@@ -17,6 +17,8 @@ public static class DependencyInjection
 
         services.AddTransient<IHrService, HrService>();
 
+        services.AddTransient<IApplicantService, ApplicantService>();
+        
         return services;
     }
 }
