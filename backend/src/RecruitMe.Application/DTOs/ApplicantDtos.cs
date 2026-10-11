@@ -13,7 +13,7 @@ public class CreateApplicant
 
 public class ApplicantDto
 {
-    public int ID { get; set; }
+    public int Id { get; set; }
     public required string FullName { get; set; }
     public required string Email { get; set; }
     public List<WorkExperienceDto> WorkExperiences { get; set; } = [];

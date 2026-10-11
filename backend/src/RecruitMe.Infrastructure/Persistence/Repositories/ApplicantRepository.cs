@@ -14,5 +14,10 @@ namespace RecruitMe.Infrastructure.Persistence.Repositories
             var applicant = await context.Applicants.SingleAsync(a => a.Id == id);
             applicant.WorkExperiences.Add(entity);
         }
+
+        public Task GetApplicantByIdentity(string identity, CancellationToken cancellationToken)
+        {
+
+        }
     }
 }

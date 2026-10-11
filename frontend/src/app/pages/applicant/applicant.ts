@@ -21,7 +21,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { filter, from, map } from 'rxjs';
 import { concatMap, toArray } from 'rxjs/operators';
 import { ApplicantService } from '../service/applicant.service';
-import { ApplicantDto } from '@/app/models/applicant';
+import { ApplicantDto } from '@/app/models/applicant.model';
 
 interface Column {
     field: string;
@@ -34,18 +34,8 @@ interface ExportColumn {
     dataKey: string;
 }
 
-interface FormData {
-    id?: number;
-    fullName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    hireDate: Date;
-    salary: number;
-}
-
 @Component({
-    selector: 'app-hr',
+    selector: 'app-applicants',
     standalone: true,
     imports: [
         CommonModule,
@@ -86,12 +76,12 @@ interface FormData {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+            [globalFilterFields]="['fullName', 'email']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedApplicants"
             [rowHover]="true"
             dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} hrEmployee"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Applicants"
             [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
         >
@@ -121,96 +111,31 @@ interface FormData {
                     <th style="min-width: 12rem"></th>
                 </tr>
             </ng-template>
-            <ng-template #body let-hrEmployee>
+            <ng-template #body let-applicant>
                 <tr>
                     <td style="width: 3rem">
-                        <p-tableCheckbox [value]="hrEmployee" />
+                        <p-tableCheckbox [value]="applicant" />
                     </td>
-                    <td style="min-width: 16rem">{{ hrEmployee.id }}</td>
-                    <td style="min-width: 16rem">{{ hrEmployee.fullName }}</td>
-                    <td>{{ hrEmployee.email }}</td>
+                    <td style="min-width: 16rem">{{ applicant.id }}</td>
+                    <td style="min-width: 16rem">{{ applicant.fullName }}</td>
+                    <td>{{ applicant.email }}</td>
                     <td>
-                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editHrEmployee(hrEmployee)" />
-                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteEmployee(hrEmployee)" />
+                        <p-button icon="pi pi-eye" class="mr-2" [rounded]="true" [outlined]="true" (click)="viewApplicant(applicant.id)" />
                     </td>
                 </tr>
             </ng-template>
         </p-table>
-
-        <p-dialog [(visible)]="hrEmployeeDialog" [style]="{ width: '450px' }" header="Hr Details" [modal]="true">
-            <ng-template #content>
-                <div class="flex flex-col gap-6" [formGroup]="employeeForm">
-                    <div>
-                        <label for="name" class="block font-bold mb-3">Name</label>
-                        <input type="text" pInputText id="name" formControlName="fullName" required autofocus fluid />
-                        @if (employeeForm.controls['fullName'].touched && employeeForm.controls['fullName'].hasError('required')) {
-                            <small class="text-red-500">Full name is required.</small>
-                        }
-                    </div>
-
-                    <div>
-                        <label for="email" class="block font-bold mb-3">Email</label>
-                        <input type="text" pInputText id="email" formControlName="email" required autofocus fluid />
-                        @if (employeeForm.controls['email'].touched && employeeForm.controls['email'].hasError('required')) {
-                            <small class="text-red-500">Email is required.</small>
-                        }
-                        @if (employeeForm.controls['email'].touched && employeeForm.controls['email'].hasError('email')) {
-                            <small class="text-red-500">Please enter a valid email.</small>
-                        }
-                    </div>
-                    <div class="flex flex-col gap-6">
-                        <div>
-                            <label for="password" class="block font-bold mb-3">Password</label>
-                            <input type="text" pInputText id="password" formControlName="password" required autofocus fluid />
-                            @if (employeeForm.controls['password'].touched && employeeForm.controls['password'].hasError('required')) {
-                                <small class="text-red-500">Password is required.</small>
-                            }
-                        </div>
-                        <div>
-                            <label for="confirmPassword" class="block font-bold mb-3">Confirm Password</label>
-                            <input type="text" pInputText id="confirmPassword" formControlName="confirmPassword" required autofocus fluid />
-                            @if (employeeForm.controls['confirmPassword'].touched && employeeForm.controls['confirmPassword'].hasError('required')) {
-                                <small class="text-red-500">Confirm Password is required.</small>
-                            }
-                            @if (employeeForm.controls['confirmPassword'].touched && employeeForm.controls['confirmPassword'].hasError('mismatch')) {
-                                <small class="text-red-500">Passwords do not match.</small>
-                            }
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="salary" class="block font-bold mb-3">Salary</label>
-                        <input type="text" pInputText id="salary" formControlName="salary" required autofocus fluid />
-                        @if (employeeForm.controls['salary'].touched && employeeForm.controls['salary'].hasError('required')) {
-                            <small class="text-red-500">Salary is required.</small>
-                        }
-                        @if (employeeForm.controls['salary'].touched && employeeForm.controls['salary'].hasError('min')) {
-                            <small class="text-red-500">Salary must be a positive value.</small>
-                        }
-                    </div>
-                </div>
-            </ng-template>
-
-            <ng-template #footer>
-                <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="save()" />
-            </ng-template>
-        </p-dialog>
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
     providers: [MessageService, ApplicantService, ConfirmationService]
 })
 export class Applicants implements OnInit {
-    hrEmployeeDialog: boolean = false;
-
     applicants = signal<ApplicantDto[]>([]);
-
-    employeeForm: FormGroup;
 
     selectedApplicants!: ApplicantDto[] | null;
 
-    currentEmployee = signal<ApplicantDto>({} as ApplicantDto);
+    currentApplicant = signal<ApplicantDto>({} as ApplicantDto);
 
     @ViewChild('dt') dt!: Table;
 
@@ -222,17 +147,8 @@ export class Applicants implements OnInit {
         private applicantService: ApplicantService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private fb: FormBuilder
     ) {
-        this.employeeForm = this.fb.group({
-            fullName: ['', [Validators.required]],
-            email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required]],
-            confirmPassword: ['', [Validators.required]],
-            hireDate: [new Date(), [Validators.required]],
-            salary: [0, [Validators.required, Validators.min(0)]]
-        });
-        this.employeeForm.controls['confirmPassword'].addValidators(createPasswordVAlidator(this.employeeForm.controls['password']));
+     
     }
 
     exportCSV() {
@@ -241,35 +157,11 @@ export class Applicants implements OnInit {
 
     ngOnInit() {
         this.applicants = this.applicantService.list;
-        this.loadDemoData();
     }
 
-    loadDemoData() {
-        this.applicantService.loadList();
-        
-        this.cols = [
-            { field: 'id', header: 'Id', customExportHeader: 'ID' },
-            { field: 'fullName', header: 'Name' },
-            { field: 'email', header: 'Email' },
-            { field: 'hireDate', header: 'Hire Date' }
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
-    }
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-    }
-
-    openNew() {
-        this.employeeForm.reset();
-        this.hrEmployeeDialog = true;
-    }
-
-    editHrEmployee(hrEmployee: ApplicantDto) {
-        this.employeeForm.reset();
-        this.employeeForm.patchValue(hrEmployee);
-        this.hrEmployeeDialog = true;
     }
 
     deleteSelected() {
@@ -297,38 +189,7 @@ export class Applicants implements OnInit {
         });
     }
 
-    hideDialog() {
-        this.hrEmployeeDialog = false;
-    }
+   viewApplicant(id: number) {
 
-    deleteEmployee(hrEmployee: ApplicantDto) {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + hrEmployee.fullName + '?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.applicantService.delete(hrEmployee.id);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Hr Deleted',
-                    life: 3000
-                });
-            }
-        });
-    }
-
-    save() {
-        if (!this.employeeForm.invalid) {
-            this.applicantService.create(this.employeeForm.value);
-        }
-    }
-}
-
-function createPasswordVAlidator(passwordCtl: AbstractControl): ValidatorFn {
-    return (confirmPasswordCtl: AbstractControl): ValidationErrors | null => {
-        const password = passwordCtl.value;
-        const confirmPassword = confirmPasswordCtl.value;
-        return password === confirmPassword ? null : { mismatch: true };
-    };
+   }
 }

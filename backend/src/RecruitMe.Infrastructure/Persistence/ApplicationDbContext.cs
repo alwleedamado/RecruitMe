@@ -11,6 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<JobPosting> JobPosts { get; set; }
     public DbSet<Applicant> Applicants { get; set; }
     public DbSet<InterviewSchedule> Interviews { get; set; }
+    public DbSet<ApplicationEntity> Applications { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

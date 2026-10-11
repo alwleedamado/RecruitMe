@@ -8,5 +8,6 @@ namespace RecruitMe.Application.Interfaces.Repositories
     public interface IApplicantRepository : IRepository<Applicant>
     {
         Task AddExperienceAsync(int id, WorkExperience entity);
+        Task GetApplicantByIdentity(string identity, CancellationToken cancellationToken);
     }
 }
