@@ -86,7 +86,7 @@ interface FormData {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+            [globalFilterFields]="['name']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedEmployees"
             [rowHover]="true"
@@ -97,7 +97,7 @@ interface FormData {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Products</h5>
+                    <h5 class="m-0">Manage Employes</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -250,10 +250,10 @@ export class Hr implements OnInit {
 
     ngOnInit() {
         this.employees = this.hrService.list;
-        this.loadDemoData();
+        this.loadData();
     }
 
-    loadDemoData() {
+    loadData() {
         this.hrService.loadList();
         
         this.cols = [

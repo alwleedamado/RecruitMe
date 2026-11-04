@@ -34,25 +34,24 @@ export class AppMenu {
                 items: [
                     {
                         label: "HR",
-                        icon: 'pi pi-fw pi-briefcase',
+                        icon: 'pi pi-fw pi-users',
                         routerLink: ['/pages/hr']
                     },
                      {
                         label: "Applicants",
-                        icon: 'pi pi-fw pi-person',
+                        icon: 'pi pi-fw pi-users',
                         routerLink: ['/pages/applicants']
                     },
-                    {
-                        label: 'Landing',
-                        icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/landing']
+                     {
+                        label: "Applications",
+                        icon: 'pi pi-fw pi-briefcase',
+                        routerLink: ['/pages/applications']
                     },
-                  
-                    {
-                        label: 'Crud',
-                        icon: 'pi pi-fw pi-pencil',
-                        routerLink: ['/pages/crud']
-                    }
+                     {
+                        label: "Job Postings",
+                        icon: 'pi pi-fw pi-calendar',
+                        routerLink: ['/pages/job-postings']
+                    },
                 ]
             }
         ];

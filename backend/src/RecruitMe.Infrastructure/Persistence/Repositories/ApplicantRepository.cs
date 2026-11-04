@@ -17,7 +17,7 @@ namespace RecruitMe.Infrastructure.Persistence.Repositories
 
         public Task GetApplicantByIdentity(string identity, CancellationToken cancellationToken)
         {
-
+            return Task.CompletedTask;
         }
     }
 }

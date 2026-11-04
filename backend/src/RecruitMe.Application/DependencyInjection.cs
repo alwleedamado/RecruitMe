@@ -18,6 +18,8 @@ public static class DependencyInjection
         services.AddTransient<IHrService, HrService>();
 
         services.AddTransient<IApplicantService, ApplicantService>();
+
+        services.AddTransient<IJobPostingService, JobPostingService>();
         
         return services;
     }

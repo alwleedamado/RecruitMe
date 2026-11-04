@@ -61,7 +61,6 @@ interface ExportColumn {
     template: `
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
-                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
                 <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelected()" [disabled]="!selectedApplicants || !selectedApplicants.length" />
             </ng-template>
 
@@ -146,10 +145,8 @@ export class Applicants implements OnInit {
     constructor(
         private applicantService: ApplicantService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-    ) {
-     
-    }
+        private confirmationService: ConfirmationService
+    ) {}
 
     exportCSV() {
         this.dt.exportCSV();
@@ -158,7 +155,6 @@ export class Applicants implements OnInit {
     ngOnInit() {
         this.applicants = this.applicantService.list;
     }
-
 
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
@@ -189,7 +185,5 @@ export class Applicants implements OnInit {
         });
     }
 
-   viewApplicant(id: number) {
-
-   }
+    viewApplicant(id: number) {}
 }

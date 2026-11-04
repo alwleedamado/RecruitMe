@@ -4,6 +4,7 @@ namespace RecruitMe.Application.DTOs;
 
 public class JobPostingDto
 {
+    public int Id { get; set; }
     public required string Title { get; set; }
     public required  string Description { get; set; }
     public required string Requirements { get; set; }

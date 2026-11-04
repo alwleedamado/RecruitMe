@@ -3,6 +3,7 @@ import { JobPostingDto } from "./jobPosting.model";
 export interface ApplicationDto {
     id: number;
     applicantId: number;
+    applicantName: string;
     jobId: number;
     jobPosting: JobPostingDto;
     status: ApplicationStatus;

@@ -3,7 +3,6 @@ import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { Product, ProductService } from '@/app/pages/service/product.service';
 
 @Component({
     standalone: true,
@@ -34,14 +33,12 @@ import { Product, ProductService } from '@/app/pages/service/product.service';
             </ng-template>
         </p-table>
     </div>`,
-    providers: [ProductService]
+    providers: []
 })
 export class RecentSalesWidget {
-    products = signal<Product[]>([]);
+    products = signal<any[]>([]);
 
-    productService = inject(ProductService);
 
     ngOnInit() {
-        this.productService.getProductsSmall().then((data) => (this.products.set(data)));
     }
 }

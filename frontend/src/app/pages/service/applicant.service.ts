@@ -6,7 +6,7 @@ import { ApplicantDto } from '@/app/models/applicant.model';
 
 @Injectable()
 export class ApplicantService extends DataService<ApplicantDto> {
-    protected endpoint: string = 'hr';
+    protected endpoint: string = 'applicants';
     constructor(httpClient: HttpClient) {
         super(httpClient);
     }

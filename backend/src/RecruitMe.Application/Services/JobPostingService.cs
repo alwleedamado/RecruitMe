@@ -5,7 +5,7 @@ using RecruitMe.Domain.Entities;
 
 namespace RecruitMe.Application.Services;
 
-public class JobPostingPostingService(IUnitOfWork unitOfWork,IMapper mapper, ICurrentUserService currentUserService) : IJobPostingService
+public class JobPostingService(IUnitOfWork unitOfWork,IMapper mapper, ICurrentUserService currentUserService) : IJobPostingService
 {
     public async Task<JobPostingDto?> GetJobPostingAsync(int jobPostingId)
     {
@@ -29,6 +29,7 @@ public class JobPostingPostingService(IUnitOfWork unitOfWork,IMapper mapper, ICu
     {
         var entity = await unitOfWork.JobPostingRepository.GetByIdAsync(id) ?? throw new NullReferenceException();
         unitOfWork.JobPostingRepository.Delete(entity);
+        await unitOfWork.SaveChangesAsync();
     }
 
     public async Task<List<JobPostingDto>> GetAll()
