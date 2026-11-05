@@ -8,7 +8,7 @@ namespace RecruitMe.Api.Controllers;
 [ApiController]
 [Route("api/auth")]
 public class AuthenticationController(
-    IHrService hrService, IApplicantService applicantService,
+    IApplicantService applicantService,
     IIdentityService identityService)
     : ControllerBase
 {

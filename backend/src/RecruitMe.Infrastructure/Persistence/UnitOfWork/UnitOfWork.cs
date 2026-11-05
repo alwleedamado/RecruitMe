@@ -25,6 +25,13 @@ public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
         get => field ?? new ApplicantRepository(_context);
         set;
     }
+
+    public IApplicationRepository ApplicationRepository
+    {
+        get => field ?? new ApplicationRepository(_context);
+        set;
+    }
+
     public async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
@@ -32,7 +39,7 @@ public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
         {
             return await _context.SaveChangesAsync(cancellationToken);
         }
-        catch (Exception e)
+        catch (Exception)
         {
 
             throw;

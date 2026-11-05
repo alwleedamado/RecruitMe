@@ -4,6 +4,6 @@ namespace RecruitMe.Application.Interfaces.Repositories
 {
     public interface IApplicationRepository : IRepository<ApplicationEntity>
     {
-
+        Task<ApplicationEntity?> GetByApplicantId(int applicantId, int applicaitonId);
     }
 }

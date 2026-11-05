@@ -1,3 +1,4 @@
+using RecruitMe.Application.DTOs;
 using RecruitMe.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,6 @@ namespace RecruitMe.Application.Interfaces.Repositories
     public interface IApplicantRepository : IRepository<Applicant>
     {
         Task AddExperienceAsync(int id, WorkExperience entity);
-        Task GetApplicantByIdentity(string identity, CancellationToken cancellationToken);
+        Task<Applicant> GetApplicantByIdentity(string identity, CancellationToken cancellationToken);
     }
 }

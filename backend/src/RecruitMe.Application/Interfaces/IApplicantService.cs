@@ -8,9 +8,11 @@ namespace RecruitMe.Application.Interfaces
 {
     public interface IApplicantService
     {
-        Task CreateApplicantAsync(CreateApplicant request, CancellationToken cancellationToken);
+        Task CreateApplicantAsync(CreateApplicant request, CancellationToken ct);
         Task<List<ApplicantDto>> GetAllApplicantsAsync();
         Task<ApplicantDto?> GetApplicantByIdAsync(int id);
-        Task AddExperienceAsync(int id, WorkExperienceDto workExperienceDto);
+        Task AddExperienceAsync(WorkExperienceDto workExperienceDto, CancellationToken ct);
+        Task DeleteExperience(int id, CancellationToken ct);
+        Task UpdateExperienceAsync(UpdateExperienceRequest workExperienceDto, CancellationToken ct);
     }
 }

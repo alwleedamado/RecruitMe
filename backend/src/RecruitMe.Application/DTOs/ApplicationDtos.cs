@@ -18,3 +18,8 @@ public class CreateApplication
 {
     public int JobId { get; set; }
 }
+
+public class UpdateApplicationRequest
+{
+    public int Id { get; set; }
+}

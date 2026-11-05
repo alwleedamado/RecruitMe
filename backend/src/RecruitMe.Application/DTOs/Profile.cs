@@ -16,5 +16,6 @@ public class MappingProfile : Profile
 
         CreateMap<CreateJobPosting, JobPosting>();
         CreateMap<JobPosting, JobPostingDto>();
+        CreateMap<UpdateApplicationRequest, ApplicationEntity>();
     }
 }

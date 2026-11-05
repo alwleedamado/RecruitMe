@@ -8,14 +8,22 @@ using System.Text;
 
 namespace RecruitMe.Application.Services
 {
-    public class ApplicantService(IMapper mapper, IUnitOfWork unitOfWork, IIdentityService identityService) : IApplicantService
+    public class ApplicantService(IMapper mapper, IUnitOfWork unitOfWork, IIdentityService identityService, ICurrentUserService currentUserService) : IApplicantService
     {
-        public async Task AddExperienceAsync(int id, WorkExperienceDto workExperienceDto)
+
+        private async Task<Applicant> GetApplicantAsync(CancellationToken ct)
         {
-            var applicant = await unitOfWork.ApplicantRepository.GetByIdAsync(id) ?? throw new InvalidCastException("Applicant not found");
+            var identityId = currentUserService.UserId!;
+            var applicant = await unitOfWork.ApplicantRepository.GetApplicantByIdentity(identityId, ct);
+            return applicant;
+        }
+
+        public async Task AddExperienceAsync(WorkExperienceDto workExperienceDto, CancellationToken ct)
+        {
+            var applicant = await GetApplicantAsync(ct);
             var entity = mapper.Map<WorkExperience>(workExperienceDto);
-            await unitOfWork.ApplicantRepository.AddExperienceAsync(id, entity);
-            await unitOfWork.SaveChangesAsync();
+            applicant.WorkExperiences.Add(entity);
+            await unitOfWork.SaveChangesAsync(ct);
         }
 
         public async Task CreateApplicantAsync(CreateApplicant request, CancellationToken cancellationToken)
@@ -28,6 +36,14 @@ namespace RecruitMe.Application.Services
             };
             await unitOfWork.ApplicantRepository.AddAsync(applicant);
             await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task DeleteExperience(int id, CancellationToken ct)
+        {
+            var applicant = await GetApplicantAsync(ct);
+            var work = applicant.WorkExperiences.Single(x => x.Id == id);
+            applicant.WorkExperiences.Remove(work);
+            await unitOfWork.SaveChangesAsync(ct);
         }
 
         public async Task<List<ApplicantDto>> GetAllApplicantsAsync()
@@ -45,6 +61,14 @@ namespace RecruitMe.Application.Services
                 return null;
             }
             return mapper.Map<ApplicantDto>(entity);
+        }
+
+        public async Task UpdateExperienceAsync(UpdateExperienceRequest workExperienceDto, CancellationToken ct)
+        {
+            var applicant = await GetApplicantAsync(ct);
+            var work = applicant.WorkExperiences.Single(x => x.Id == workExperienceDto.Id);
+            mapper.Map(workExperienceDto, work);
+            await unitOfWork.SaveChangesAsync(ct);
         }
     }
 }
